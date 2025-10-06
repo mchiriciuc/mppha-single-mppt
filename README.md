@@ -29,7 +29,6 @@ ESPHome-based WiFi interface for Voltronic-style solar inverters, providing seam
   - Automatic AP fallback mode
 
 - **Smart Features**
-  - Battery type auto-detection with human-readable names
   - Device mode monitoring (Battery/Grid/Standby/Fault)
   - Status LED integration
   - 802.11k/v WiFi roaming support
@@ -47,7 +46,7 @@ ESPHome-based WiFi interface for Voltronic-style solar inverters, providing seam
 
 1. Open your ESPHome dashboard
 2. Click "New Device" → "Continue" → "Open ESPHome Web"
-3. Connect your ESP32-S3 via USB
+3. Connect your MPPHA device via RJ45 cable to the inverter.
 4. The device will appear as "MPPHA Single"
 5. Configure WiFi using ESP Improv (Bluetooth)
 
@@ -81,30 +80,6 @@ All configuration is done through Home Assistant after initial setup:
 - **Current Limits**: Adjust maximum charging currents
 - **Log Level**: Change logging verbosity for debugging
 
-## Supported Battery Types
-
-- AGM
-- User-Defined
-- Pylontech
-- WECO
-- Soltaro
-- Lib-protocol
-
-## External Component
-
-This project uses the `pipsolar` custom component for Voltronic protocol communication. Ensure you have the component in your `components/` directory.
-
-## Wiring
-
-| ESP32-S3 Pin | Function | Inverter Connection |
-|--------------|----------|---------------------|
-| GPIO6        | TX       | RX (Inverter)       |
-| GPIO7        | RX       | TX (Inverter)       |
-| GPIO45       | Status LED | Built-in LED      |
-| GND          | Ground   | GND (Inverter)      |
-
-⚠️ **Important**: Ensure proper voltage levels (3.3V logic) and use appropriate level shifters if required.
-
 ## Troubleshooting
 
 ### Device not connecting to WiFi
@@ -112,29 +87,10 @@ This project uses the `pipsolar` custom component for Voltronic protocol communi
 - Check WiFi credentials
 - Ensure 2.4GHz WiFi is available (5GHz not supported)
 
-### No data from inverter
-- Verify UART connections (TX ↔ RX)
-- Check baud rate (should be 2400)
-- Ensure inverter is powered on
-- Review logs via ESPHome dashboard
-
 ### Entities not appearing in Home Assistant
 - Wait 30 seconds for auto-discovery
 - Restart Home Assistant
 - Check ESPHome logs for connection errors
-
-## Development
-
-```bash
-# Validate configuration
-esphome config firmware.yaml
-
-# Compile without upload
-esphome compile firmware.yaml
-
-# Monitor logs
-esphome logs firmware.yaml
-```
 
 ## Contributing
 
