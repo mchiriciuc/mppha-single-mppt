@@ -42,31 +42,13 @@ ESPHome-based WiFi interface for Voltronic-style solar inverters, providing seam
 
 ## Installation
 
-### Option 1: ESPHome Dashboard (Recommended)
-
-1. Open your ESPHome dashboard
-2. Click "New Device" → "Continue" → "Open ESPHome Web"
-3. Connect your MPPHA device via RJ45 cable to the inverter.
-4. The device will appear as "MPPHA Single"
-5. Configure WiFi using ESP Improv (Bluetooth)
-
-### Option 2: Manual Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/mchiriciuc/mppha-single-mppt.git
-cd mppha-single-mppt
-
-# Install ESPHome (if not already installed)
-pip install esphome
-
-# Compile and upload
-esphome run firmware.yaml
-```
+1. Connect the MPPHA device to the serial port of the inverter with the supplied RJ45 cable
+2. The inverter should power the board trough the RJ45 cable and a orange led should light up on the board
+3. The second led should pulse slowly (aprox. once per second)
 
 ## Initial Setup
 
-1. **Power up the device** - The ESP32 will create a WiFi access point named `mppha_single-XXXXXX - Setup` (password: `setup1234`)
+1. **Power up the device** - The ESP32 will create a WiFi access point named `mppha_single-XXXXXX - Setup` (password: `setup1234`) - Default IP 192.168.4.1
 2. **Connect via Bluetooth** using ESP Improv in the Home Assistant ESPHome dashboard
 3. **Configure WiFi credentials** through the provisioning interface
 4. **Device auto-discovers** in Home Assistant
