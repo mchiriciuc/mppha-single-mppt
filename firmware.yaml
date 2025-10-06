@@ -136,7 +136,7 @@ wifi:
   ap:
     ssid: ${ap_ssid}
     password: ${ap_pass}
-    ap_timeout: 0s
+    ap_timeout: 30s
     # Add MAC address suffix to AP name for unique identification
 
 captive_portal:
