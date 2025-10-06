@@ -198,13 +198,13 @@ sensor:
 # ============================================================================
 # SENSORS - SOLAR (PV)
 # ============================================================================
-    pv1_input_voltage:
+    pv_input_voltage:
       name: "PV Voltage"
       icon: mdi:solar-power
-    pv1_input_current:
+    pv_input_current_for_battery:
       name: "PV Current"
       icon: mdi:current-dc
-    pv1_charging_power:
+    pv_charging_power:
       name: "PV Power"
       icon: mdi:solar-power
 
@@ -505,7 +505,7 @@ binary_sensor:
       name: "Warning - Battery Too Low to Charge"
       entity_category: diagnostic
       icon: mdi:battery-alert
-    warning_low_pv_energy:
+    warnung_low_pv_energy:
       name: "Warning - PV Low Energy"
       entity_category: diagnostic
       icon: mdi:solar-power
