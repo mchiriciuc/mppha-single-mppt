@@ -1,6 +1,6 @@
 # MPPHA - Single MPPT Voltronic Inverter Interface
 
-ESPHome-based WiFi interface for Voltronic-style solar inverters, MPP Solar PIP inverters, etc. with one MPPT , providing seamless integration with Home Assistant.
+ESPHome-based WiFi interface for Voltronic-style solar inverters, PIP inverters, etc. with one MPPT , providing seamless integration with Home Assistant.
 
 [![Made for ESPHome](https://img.shields.io/badge/Made%20for-ESPHome-black?logo=esphome)](https://esphome.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -35,7 +35,7 @@ ESPHome-based WiFi interface for Voltronic-style solar inverters, MPP Solar PIP 
 
 ## Hardware Requirements
 
-- **MCU**: ESP32-S3-DevKitC-1
+- **MCU**: ESP32-S3
 - **Interface Board**: MPPHA (custom PCB)
 - **Inverter**: Voltronic-style solar inverters (PIP series, etc.)
 - **Connection**: UART (GPIO6/GPIO7) at 2400 baud
