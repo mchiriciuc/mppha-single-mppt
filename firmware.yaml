@@ -5,51 +5,6 @@
 # Hardware: MPPHA
 # Interface: UART to Voltronic Protocol
 # 
-# CHANGELOG:
-# v1.2.4 - 2025-10-06
-#   - Added substitutions for AP SSID, AP password, project info, and import URL
-#   - Added esphome project configuration for "Made for ESPHome" compliance
-#   - Added dashboard_import for easy device adoption
-#   - Changed AP password from secrets to substitution
-#
-# v1.2.3 - 2025-10-06
-#   - Changed device name to "mppha_single" and friendly name to "MPPHA Single"
-#
-# v1.2.2 - 2025-10-06
-#   - Removed hardcoded WiFi credentials for Improv-only provisioning
-#   - Changed AP SSID to "MPPHA" with MAC suffix
-#   - Added name_add_mac_suffix for unique AP identification
-#
-# v1.2.1 - 2025-10-06
-#   - Added ESP32 Improv for easy WiFi provisioning (no authorization required)
-#   - Configured status LED as Improv status indicator
-#
-# v1.2.0 - 2025-10-06
-#   - Added dynamic log level control via select entity
-#   - Added battery type text conversion (numeric to human-readable)
-#   - Added substitution for friendly_name and default log level
-#   - Added min_version requirement (2025.5.0)
-#   - Added on_boot action to set initial log level
-#   - Added debug component and reset reason sensor
-#   - Added WiFi 802.11v (BTM) and 802.11k (RRM) support
-#   - Added API reboot_timeout setting (disabled auto-reboot)
-#   - Shortened sensor names for better UI display
-#   - Made configuration sensors internal with select controls
-#   - Updated device/hardware information in header
-#
-# v1.1.1 - 2025-10-06
-#   - Removed entity_category from pipsolar sensors (not supported by external component)
-#   - Kept entity_category on template components (select, text_sensor, light)
-#
-# v1.1.0 - 2025-10-06
-#   - Added entity categories (config/diagnostic) for Made for ESPHome compliance
-#   - Added icons to all entities
-#   - Fixed syntax error in charger_source_priority name
-#   - Fixed device_mode lambda assignment error
-#   - Organized code into logical sections
-#   - Added comprehensive header documentation
-#
-# v1.0.0 - Initial release
 # ============================================================================
 
 # ============================================================================
@@ -231,9 +186,14 @@ sensor:
       internal: True
       on_value:
         then:
-          - select.set:
-              id: select_battery_under_voltage
-              option: !lambda return str_sprintf("%.1f", id(battery_under_voltage).state); 
+          - lambda: |-
+              auto new_value = str_sprintf("%.1f", id(battery_under_voltage).state);
+              auto current_value = id(select_battery_under_voltage).state;
+              if (new_value != current_value) {
+                auto call = id(select_battery_under_voltage).make_call();
+                call.set_option(new_value);
+                call.perform();
+              }
     battery_bulk_voltage:
       name: "Battery Bulk Charge"
       id: battery_bulk_charge
@@ -246,9 +206,14 @@ sensor:
       id: battery_float_charge
       on_value:
         then:
-          - select.set:
-              id: select_battery_float_charge_voltage
-              option: !lambda return str_sprintf("%.1f", id(battery_float_charge).state);
+          - lambda: |-
+              auto new_value = str_sprintf("%.1f", id(battery_float_charge).state);
+              auto current_value = id(select_battery_float_charge_voltage).state;
+              if (new_value != current_value) {
+                auto call = id(select_battery_float_charge_voltage).make_call();
+                call.set_option(new_value);
+                call.perform();
+              }
     battery_recharge_voltage:
       name: "Battery Recharge Voltage"
       icon: mdi:battery-charging-50
@@ -256,9 +221,14 @@ sensor:
       entity_category: diagnostic
       on_value:
         then:
-          - select.set:
-              id: select_battery_recharge_voltage
-              option: !lambda return str_sprintf("%.1f", id(battery_recharge_voltage).state);      
+          - lambda: |-
+              auto new_value = str_sprintf("%.1f", id(battery_recharge_voltage).state);
+              auto current_value = id(select_battery_recharge_voltage).state;
+              if (new_value != current_value) {
+                auto call = id(select_battery_recharge_voltage).make_call();
+                call.set_option(new_value);
+                call.perform();
+              } 
     battery_redischarge_voltage:
       name: "Battery Redischarge Voltage"
       icon: mdi:battery-minus
@@ -266,9 +236,14 @@ sensor:
       id: battery_redischarge_voltage
       on_value:
         then:
-          - select.set:
-              id: select_battery_redischarge_voltage
-              option: !lambda return str_sprintf("%.1f", id(battery_redischarge_voltage).state);            
+          - lambda: |-
+              auto new_value = str_sprintf("%.1f", id(battery_redischarge_voltage).state);
+              auto current_value = id(select_battery_redischarge_voltage).state;
+              if (new_value != current_value) {
+                auto call = id(select_battery_redischarge_voltage).make_call();
+                call.set_option(new_value);
+                call.perform();
+              }           
     battery_type:
       name: "Battery Type Code"
       id: battery_type_code
@@ -297,9 +272,14 @@ sensor:
       entity_category: DIAGNOSTIC
       on_value:
         then:
-          - select.set:
-              id: select_max_ac_charging_current
-              option: !lambda return str_sprintf("%.1f", id(max_ac_charging_current).state);            
+          - lambda: |-
+              auto new_value = str_sprintf("%.1f", id(max_ac_charging_current).state);
+              auto current_value = id(select_max_ac_charging_current).state;
+              if (new_value != current_value) {
+                auto call = id(select_max_ac_charging_current).make_call();
+                call.set_option(new_value);
+                call.perform();
+              }          
     current_max_charging_current:
       id: max_charging_current
       name: "Battery Max Charging Current"
@@ -307,9 +287,14 @@ sensor:
       entity_category: DIAGNOSTIC
       on_value:
         then:
-          - select.set:
-              id: select_max_charging_current
-              option: !lambda return str_sprintf("%.1f", id(max_charging_current).state);                  
+          - lambda: |-
+              auto new_value = str_sprintf("%.1f", id(max_charging_current).state);
+              auto current_value = id(select_max_charging_current).state;
+              if (new_value != current_value) {
+                auto call = id(select_max_charging_current).make_call();
+                call.set_option(new_value);
+                call.perform();
+              }                
     charger_source_priority:
       name: "Battery Charge Source Priority"
       icon: mdi:priority-high
@@ -317,9 +302,18 @@ sensor:
       internal: true
       on_value:
         then:
-          - select.set_index:
-              id: select_charger_source_priority
-              index: !lambda return id(charger_source_priority).state; 
+          - lambda: |-
+              int new_index = (int)id(charger_source_priority).state;
+              auto current_index = id(select_charger_source_priority).active_index();
+              if (current_index.has_value() && new_index != current_index.value()) {
+                auto call = id(select_charger_source_priority).make_call();
+                call.set_index(new_index);
+                call.perform();
+              } else if (!current_index.has_value()) {
+                auto call = id(select_charger_source_priority).make_call();
+                call.set_index(new_index);
+                call.perform();
+              }
 
 # ============================================================================
 # CONFIGURATION SENSORS - OUTPUT SETTINGS
@@ -331,9 +325,18 @@ sensor:
       internal: true
       on_value:
         then:
-          - select.set_index:
-              id: select_output_source_priority
-              index: !lambda return id(output_source_priority).state;
+          - lambda: |-
+              int new_index = (int)id(output_source_priority).state;
+              auto current_index = id(select_output_source_priority).active_index();
+              if (current_index.has_value() && new_index != current_index.value()) {
+                auto call = id(select_output_source_priority).make_call();
+                call.set_index(new_index);
+                call.perform();
+              } else if (!current_index.has_value()) {
+                auto call = id(select_output_source_priority).make_call();
+                call.set_index(new_index);
+                call.perform();
+              }
 
 # ============================================================================
 # SENSORS - OUTPUT
