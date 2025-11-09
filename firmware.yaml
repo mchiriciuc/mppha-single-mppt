@@ -5,20 +5,71 @@
 # Hardware: MPPHA
 # Interface: UART to Voltronic Protocol
 # 
+# CHANGELOG:
+# v1.2.5 - 2025-11-09
+#   - Fixed feedback loop between select controls and sensors
+#   - Added global command_in_progress flag to prevent sensor feedback during commands
+#   - Added command_debounce script for centralized command handling
+#   - All select/sensor pairs now ignore feedback for 3s after command execution
+#
+# v1.2.4 - 2025-10-06
+#   - Added substitutions for AP SSID, AP password, project info, and import URL
+#   - Added esphome project configuration for "Made for ESPHome" compliance
+#   - Added dashboard_import for easy device adoption
+#   - Changed AP password from secrets to substitution
+#
+# v1.2.3 - 2025-10-06
+#   - Changed device name to "mppha_single" and friendly name to "MPPHA Single"
+#
+# v1.2.2 - 2025-10-06
+#   - Removed hardcoded WiFi credentials for Improv-only provisioning
+#   - Changed AP SSID to "MPPHA" with MAC suffix
+#   - Added name_add_mac_suffix for unique AP identification
+#
+# v1.2.1 - 2025-10-06
+#   - Added ESP32 Improv for easy WiFi provisioning (no authorization required)
+#   - Configured status LED as Improv status indicator
+#
+# v1.2.0 - 2025-10-06
+#   - Added dynamic log level control via select entity
+#   - Added battery type text conversion (numeric to human-readable)
+#   - Added substitution for friendly_name and default log level
+#   - Added min_version requirement (2025.5.0)
+#   - Added on_boot action to set initial log level
+#   - Added debug component and reset reason sensor
+#   - Added WiFi 802.11v (BTM) and 802.11k (RRM) support
+#   - Added API reboot_timeout setting (disabled auto-reboot)
+#   - Shortened sensor names for better UI display
+#   - Made configuration sensors internal with select controls
+#   - Updated device/hardware information in header
+#
+# v1.1.1 - 2025-10-06
+#   - Removed entity_category from pipsolar sensors (not supported by external component)
+#   - Kept entity_category on template components (select, text_sensor, light)
+#
+# v1.1.0 - 2025-10-06
+#   - Added entity categories (config/diagnostic) for Made for ESPHome compliance
+#   - Added icons to all entities
+#   - Fixed syntax error in charger_source_priority name
+#   - Fixed device_mode lambda assignment error
+#   - Organized code into logical sections
+#   - Added comprehensive header documentation
+#
+# v1.0.0 - Initial release
 # ============================================================================
 
 # ============================================================================
 # SUBSTITUTIONS
 # ============================================================================
 substitutions:
-  name: mppha_single
+  name: mpphasingle
   friendly_name: MPPHA Single
   log_level_default: "INFO"
   ap_ssid: "${name} - Setup"
   ap_pass: "setup1234"
   project_name: "mchiriciuc.mppha-single-mppt"
-  project_version: "1.2.4"
-  import_url: "github://mchiriciuc/mppha-single-mppt/firmware.yaml@v1.2.4"
+  project_version: "1.2.5"
+  import_url: "github://mchiriciuc/mppha-single-mppt/firmware.yaml@v1.2.5"
 
 
 # ============================================================================
@@ -51,6 +102,30 @@ dashboard_import:
   import_full_config: false
 
 # ============================================================================
+# GLOBALS - Command Feedback Prevention
+# ============================================================================
+globals:
+  - id: command_in_progress
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+
+# ============================================================================
+# SCRIPTS - Helper pentru comenzi
+# ============================================================================
+script:
+  - id: command_debounce
+    mode: restart  # Restart dacă se apelează din nou
+    then:
+      - globals.set:
+          id: command_in_progress
+          value: 'true'
+      - delay: 3s
+      - globals.set:
+          id: command_in_progress
+          value: 'false'
+
+# ============================================================================
 # LOGGING
 # ============================================================================
 logger:
@@ -65,7 +140,9 @@ debug:
 # HOME ASSISTANT API
 # ============================================================================
 api:
-  reboot_timeout: 0s  # Don't auto-reboot on API disconnect
+  encryption:
+    key: "wIEGrFGM2ynGNsU+31nG5XEK5r06cxh8lsqGAxskO/Q="  
+  reboot_timeout: 3min  # Don't auto-reboot on API disconnect
 
 # ============================================================================
 # ESP32 IMPROV - WiFi Provisioning
@@ -84,15 +161,21 @@ ota:
 # NETWORK CONFIGURATION
 # ============================================================================
 wifi:
-  enable_btm: true    # 802.11v support
-  enable_rrm: true    # 802.11k support  
+  ssid: !secret wifi_ssid_sura
+  password: !secret wifi_password
+  domain: !secret wifi_domain
+  use_address: 192.168.199.59
+  reboot_timeout: 1min
+  manual_ip:
+    static_ip: 192.168.199.59
+    gateway: 192.168.199.1
+    subnet: 255.255.255.0
+    dns1: 192.168.199.1   
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: ${ap_ssid}
-    password: ${ap_pass}
-    ap_timeout: 30s
-    # Add MAC address suffix to AP name for unique identification
+    ssid: "5kw Inverter"
+    password: !secret wifi_ap_password
 
 captive_portal:
 
@@ -187,6 +270,8 @@ sensor:
       on_value:
         then:
           - lambda: |-
+              if (id(command_in_progress)) return;
+              
               auto new_value = str_sprintf("%.1f", id(battery_under_voltage).state);
               auto current_value = id(select_battery_under_voltage).state;
               if (new_value != current_value) {
@@ -207,6 +292,8 @@ sensor:
       on_value:
         then:
           - lambda: |-
+              if (id(command_in_progress)) return;
+              
               auto new_value = str_sprintf("%.1f", id(battery_float_charge).state);
               auto current_value = id(select_battery_float_charge_voltage).state;
               if (new_value != current_value) {
@@ -222,6 +309,8 @@ sensor:
       on_value:
         then:
           - lambda: |-
+              if (id(command_in_progress)) return;
+              
               auto new_value = str_sprintf("%.1f", id(battery_recharge_voltage).state);
               auto current_value = id(select_battery_recharge_voltage).state;
               if (new_value != current_value) {
@@ -237,6 +326,8 @@ sensor:
       on_value:
         then:
           - lambda: |-
+              if (id(command_in_progress)) return;
+              
               auto new_value = str_sprintf("%.1f", id(battery_redischarge_voltage).state);
               auto current_value = id(select_battery_redischarge_voltage).state;
               if (new_value != current_value) {
@@ -273,6 +364,8 @@ sensor:
       on_value:
         then:
           - lambda: |-
+              if (id(command_in_progress)) return;
+              
               auto new_value = str_sprintf("%.1f", id(max_ac_charging_current).state);
               auto current_value = id(select_max_ac_charging_current).state;
               if (new_value != current_value) {
@@ -288,6 +381,8 @@ sensor:
       on_value:
         then:
           - lambda: |-
+              if (id(command_in_progress)) return;
+              
               auto new_value = str_sprintf("%.1f", id(max_charging_current).state);
               auto current_value = id(select_max_charging_current).state;
               if (new_value != current_value) {
@@ -303,6 +398,8 @@ sensor:
       on_value:
         then:
           - lambda: |-
+              if (id(command_in_progress)) return;
+              
               int new_index = (int)id(charger_source_priority).state;
               auto current_index = id(select_charger_source_priority).active_index();
               if (current_index.has_value() && new_index != current_index.value()) {
@@ -326,6 +423,8 @@ sensor:
       on_value:
         then:
           - lambda: |-
+              if (id(command_in_progress)) return;
+              
               int new_index = (int)id(output_source_priority).state;
               auto current_index = id(select_output_source_priority).active_index();
               if (current_index.has_value() && new_index != current_index.value()) {
@@ -357,6 +456,23 @@ sensor:
       name: "Output Mode"
       icon: mdi:information
       entity_category: diagnostic
+
+# ============================================================================
+# SENSORS - templates
+# ============================================================================
+
+  - platform: template
+    name: "Self Consumption Power"
+    id: self_consumption_power
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    accuracy_decimals: 1
+    update_interval: 60s
+    force_update: true
+    entity_category: diagnostic
+    lambda: |-
+      return 70.0;
 
 # ============================================================================
 # BINARY SENSORS - STATUS
@@ -677,6 +793,7 @@ select:
     optimistic: True
     set_action:
       then:
+        - script.execute: command_debounce
         - output.pipsolar.set_level:
             id: output_charger_source_priority
             value: !lambda |-               
@@ -695,6 +812,7 @@ select:
     optimistic: True
     set_action:
       then:
+        - script.execute: command_debounce
         - output.pipsolar.set_level:
             id: output_output_source_priority
             value: !lambda |-               
@@ -720,6 +838,7 @@ select:
     optimistic: True
     set_action:
       then:
+        - script.execute: command_debounce
         - output.pipsolar.set_level:
             id: output_max_charging_current
             value: !lambda return std::stof(x.c_str());
@@ -747,6 +866,7 @@ select:
     optimistic: True
     set_action:
       then:
+        - script.execute: command_debounce
         - output.pipsolar.set_level:
             id: output_max_ac_charging_current
             value: !lambda return std::stof(x.c_str());
@@ -772,6 +892,7 @@ select:
     optimistic: true
     set_action:
       then:
+        - script.execute: command_debounce
         - output.pipsolar.set_level:
             id: output_battery_under_voltage
             value: !lambda return std::stof(x.c_str());
@@ -798,6 +919,7 @@ select:
     optimistic: true
     set_action:
       then:
+        - script.execute: command_debounce
         - output.pipsolar.set_level:
             id: output_battery_redischarge_voltage
             value: !lambda return std::stof(x.c_str());
@@ -821,6 +943,7 @@ select:
     optimistic: true
     set_action:
       then:
+        - script.execute: command_debounce
         - output.pipsolar.set_level:
             id: output_battery_recharge_voltage
             value: !lambda return std::stof(x.c_str());
@@ -851,6 +974,7 @@ select:
     optimistic: true
     set_action:
       then:
+        - script.execute: command_debounce
         - output.pipsolar.set_level:
             id: output_battery_float_voltage
             value: !lambda return std::stof(x.c_str());
