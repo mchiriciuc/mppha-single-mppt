@@ -35,11 +35,6 @@ Just connect the board to the inverter's serial port with a standard RJ45 ethern
   - No hardcoded credentials required
   - Automatic AP fallback mode
 
-- **Smart Features**
-  - Device mode monitoring (Battery/Grid/Standby/Fault)
-  - Status LED integration
-  - 802.11k/v WiFi roaming support
-
 ## Hardware Requirements
 
 - **MCU**: ESP32-S3
