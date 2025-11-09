@@ -6,6 +6,8 @@
 # Interface: UART to Voltronic Protocol
 # 
 # CHANGELOG:
+# v1.2.6 - 2025-11-09
+#   - Removed WiFi credentials
 # v1.2.5 - 2025-11-09
 #   - Fixed feedback loop between select controls and sensors
 #   - Added global command_in_progress flag to prevent sensor feedback during commands
@@ -115,7 +117,7 @@ globals:
 # ============================================================================
 script:
   - id: command_debounce
-    mode: restart  # Restart dacă se apelează din nou
+    mode: restart  
     then:
       - globals.set:
           id: command_in_progress
@@ -141,7 +143,6 @@ debug:
 # ============================================================================
 api:
   encryption:
-    key: "wIEGrFGM2ynGNsU+31nG5XEK5r06cxh8lsqGAxskO/Q="  
   reboot_timeout: 3min  # Don't auto-reboot on API disconnect
 
 # ============================================================================
@@ -161,21 +162,10 @@ ota:
 # NETWORK CONFIGURATION
 # ============================================================================
 wifi:
-  ssid: !secret wifi_ssid_sura
-  password: !secret wifi_password
-  domain: !secret wifi_domain
-  use_address: 192.168.199.59
-  reboot_timeout: 1min
-  manual_ip:
-    static_ip: 192.168.199.59
-    gateway: 192.168.199.1
-    subnet: 255.255.255.0
-    dns1: 192.168.199.1   
-
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "5kw Inverter"
-    password: !secret wifi_ap_password
+    ssid: ${ap_ssid}  
+    password: ${ap_pass}
 
 captive_portal:
 
@@ -186,11 +176,6 @@ web_server:
   port: 80
   log: on
   version: 3
-#  local: true
-#  css_include: "v3/webserver-v2.css"
-#  css_url: ""
-#  js_include: "v3/www.js"
-#  js_url: "" 
 
 # ============================================================================
 # UART CONFIGURATION
