@@ -8,7 +8,7 @@ substitutions:
   ap_pass: "setup1234"
   log_level_default: "INFO"  
   project_name: "mchiriciuc.mppha"
-  project_version: "1.1.0"
+  project_version: "1.2.1"
   import_url: "github://mchiriciuc/mppha/firmware.yaml@main"
 
 # ============================================================================
