@@ -1,6 +1,6 @@
-# MPPHA - Single MPPT Inverter Interface
+# MPPHA - Inverter Interface for Home Assistant
 
-ESPHome-based WiFi interface for Voltronic-style solar inverters, PIP inverters, etc. with one MPPT , providing seamless integration with Home Assistant.
+ESPHome-based WiFi interface for Voltronic-style solar inverters, PIP inverters, EASUN, etc. , providing seamless integration with Home Assistant.
 
 [![Made for ESPHome](https://img.shields.io/badge/Made%20for-ESPHome-black?logo=esphome)](https://esphome.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -21,6 +21,7 @@ Just connect the board to the inverter's serial port with a standard RJ45 ethern
   - Inverter heat sink temperature and bus voltage
   - Output power, voltage, and load percentage
   - Complete fault and warning indicators
+  - Single AND Dual MPPT compatible
 
 - **Remote Configuration**
   - Battery charging parameters (bulk, float, recharge voltages)
@@ -53,7 +54,7 @@ If you want to purchase the electronics board contact me directly at mchiriciuc@
 
 ## Initial Setup
 
-1. **Power up the device** - The ESP32 will create a WiFi access point named `mppha_single-XXXXXX - Setup` (password: `setup1234`) - Default IP 192.168.4.1
+1. **Power up the device** - The ESP32 will create a WiFi access point named `mppha-XXXXXX - Setup` (password: `setup1234`) - Default IP 192.168.4.1
 2. **Connect via Bluetooth** using ESP Improv in the Home Assistant ESPHome dashboard
 3. **Configure WiFi credentials** through the provisioning interface
 4. **Device auto-discovers** in Home Assistant
