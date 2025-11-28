@@ -8,7 +8,7 @@ substitutions:
   ap_pass: "setup1234"
   log_level_default: "VERY_VERBOSE"  
   project_name: "mchiriciuc.mppha"
-  project_version: "1.2.2"
+  project_version: "1.2.3"
   import_url: "github://mchiriciuc/mppha/firmware.yaml@main"
 
 # ============================================================================
@@ -18,7 +18,7 @@ esphome:
   name: ${name}
   friendly_name: ${friendly_name}
   name_add_mac_suffix: true
-  min_version: 2025.5.0
+  min_version: 2025.5.1
   project:
     name: ${project_name}
     version: ${project_version}
